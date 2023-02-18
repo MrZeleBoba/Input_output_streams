@@ -54,7 +54,7 @@ public class Main {
         for (int i = 0; i < products.length; i++) {
             if (count[i] != 0) {
                 int currentPrice = prices[i] * count[i];
-                System.out.println("Продукт: " + products[i] + ", " + "Количество: " + count[i] + ", " + "Стоимость: " + prices[i] + " руб/шт," + "В сумме: " + currentPrice + "руб");
+                System.out.println("Продукт: " + products[i] + ", Количество: " + count[i] + ", Стоимость: " + prices[i] + " руб/шт," + "В сумме: " + currentPrice + "руб");
                 sumProduct += currentPrice;
             }
         }
