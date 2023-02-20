@@ -1,63 +1,72 @@
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    private static final Product[] products = {
+            new Product("Хлеб", (int) 40),
+            new Product("Гречка", 100),
+            new Product("Молоко", 70),
+            new Product("Яблоко", 20),
+            new Product("Тушенка", 150),
+            new Product("Сгущенка", 120),
+            new Product("Сахар", 60)
+    };
+
+    public static void main(String[] args) throws IOException, ParseException {
         Scanner scanner = new Scanner(System.in);
+        String s;
+        Basket shoppingCart = null;
+        int selectedItem;
+        int itemCount;
+        File basketFile = new File("basket.txt");
 
-        String[] products = {"Хлеб", "Яблоки", "Молоко"};
-        int[] prices = {100, 200, 300};
-        int[] count = new int[3];
+        if (basketFile.exists()) {
+            System.out.println("Загрузить корзину?<ENTER>");
 
-        int sumProduct = 0;
+            if (scanner.nextLine().equals("")) {
+                shoppingCart = Basket.loadFromTxtFile(basketFile);
+            } else {
+                shoppingCart = new Basket(products);
 
-        System.out.println("Список товаров для покупки:");
-
-        for (int i = 0; i < products.length; i++) {
-            System.out.println((i + 1) + "." + products[i] + "-" + prices[i] + " руб/шт");
+            }
         }
 
 
         while (true) {
-            System.out.println("Выберите товар и колличество или введите end");
-            try {
-                String input = scanner.nextLine();
-                if ("end".equals(input)) {
-                    break;
+            shoppingCart.printGoodsList(); // Выводим на экран Инфопанель
+            s = scanner.nextLine();
+            String[] inputValues = s.split(" ");
+            if (inputValues.length == 2) {
+                try {
+                    selectedItem = Integer.parseInt(inputValues[0]);
+                    itemCount = Integer.parseInt(inputValues[1]);
+
+                    if (selectedItem <= 0 || selectedItem > products.length) {
+                        System.out.println("Введите корректный номер товара из списка");
+                        continue;
+                    }
+                    if (itemCount <= 0) {
+                        continue;
+                    }
+                    shoppingCart.addToCart(selectedItem - 1, itemCount);
+                    shoppingCart.saveTxt(basketFile);
+                } catch (NumberFormatException nfe) {
+                    System.out.println("Введите 2 числа");
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
-
-                String[] parts = input.split(" ");
-
-                if (parts.length != 2) {
-                    System.out.println("Ошибка ввода:нужно ввести 2 значения через пробел");
-                    continue;
-                }
-
-                int productNumber = Integer.parseInt(parts[0]) - 1;
-                if (Integer.parseInt(parts[0]) < 1 || Integer.parseInt(parts[0]) > 3) {
-                    System.out.println("Ошибка ввода номера продукта:значение должно соответствовать номеру продукта от 1 до 3");
-                    continue;
-                }
-
-
-                int productCount = Integer.parseInt(parts[1]);
-                count[productNumber] = count[productNumber] + productCount;
-
-            } catch (NumberFormatException t) {
-                System.out.println("Введено некорректное значение");
-
+            } else if (s.equals("end")) {
+                break;
             }
-        }
 
-        System.out.println("Ваша корзина:");
-
-        for (int i = 0; i < products.length; i++) {
-            if (count[i] != 0) {
-                int currentPrice = prices[i] * count[i];
-                System.out.println("Продукт: " + products[i] + ", Количество: " + count[i] + ", Стоимость: " + prices[i] + " руб/шт," + "В сумме: " + currentPrice + "руб");
-                sumProduct += currentPrice;
-            }
         }
-        System.out.println("Итого: " + sumProduct + " руб");
+            
+        shoppingCart.printCart();
+
+
     }
 }
