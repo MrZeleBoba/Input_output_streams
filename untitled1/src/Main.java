@@ -16,19 +16,19 @@ public class Main {
             new Product("Сахар", 60)
     };
 
-    public static void main(String[] args) throws IOException, ParseException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         Scanner scanner = new Scanner(System.in);
         String s;
-        Basket shoppingCart = null;
+        Basket shoppingCart = new Basket(products);
         int selectedItem;
         int itemCount;
-        File basketFile = new File("basket.txt");
+        File basketFile = new File("basket.bin");
 
         if (basketFile.exists()) {
             System.out.println("Загрузить корзину?<ENTER>");
 
             if (scanner.nextLine().equals("")) {
-                shoppingCart = Basket.loadFromTxtFile(basketFile);
+                shoppingCart = Basket.loadFromBinFile(basketFile);
             } else {
                 shoppingCart = new Basket(products);
 
@@ -53,7 +53,7 @@ public class Main {
                         continue;
                     }
                     shoppingCart.addToCart(selectedItem - 1, itemCount);
-                    shoppingCart.saveTxt(basketFile);
+                    shoppingCart.saveBin(basketFile);
                 } catch (NumberFormatException nfe) {
                     System.out.println("Введите 2 числа");
                 } catch (FileNotFoundException e) {
@@ -64,7 +64,7 @@ public class Main {
             }
 
         }
-            
+
         shoppingCart.printCart();
 
 

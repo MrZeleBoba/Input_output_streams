@@ -1,12 +1,10 @@
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 
-public class Basket {
+public class Basket implements Serializable {
     private Product[] products;
     private int sumProduct = 0;
 
@@ -50,12 +48,12 @@ public class Basket {
 
     }
 
-    public void saveTxt(File textFile) throws IOException {
-        try (PrintWriter out = new PrintWriter(textFile);) {
-            for (Product good : products) {
-                out.println(good.getName() + " " + good.getPrice() + " " + good.getInBasket() + " ");
-
-            }
+    public void saveBin(File file) throws IOException {
+        try {
+            var fos = new FileOutputStream(file);
+            var oos = new ObjectOutputStream(fos);
+            oos.writeObject(this);
+            oos.close();
 
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -63,20 +61,9 @@ public class Basket {
         }
     }
 
-    public static Basket loadFromTxtFile(File textFile) throws IOException {
-        Scanner sc = new Scanner(textFile);
-        List<Product> products1 = new ArrayList<>();
-        String name;
-        int price;
-        int inBasket;
-        while (sc.hasNext()) {
-            String[] d = sc.nextLine().split(" ");
-            name = d[0];
-            price = Integer.parseInt(d[1]);
-            inBasket = Integer.parseInt(d[2]);
-            products1.add(new Product(name, price, inBasket));
-        }
-        return new Basket(products1.toArray(Product[]::new));
+    public static Basket loadFromBinFile(File file) throws IOException, ClassNotFoundException {
+        var fis = new FileInputStream(file);
+        var ois = new ObjectInputStream(fis);
+        return (Basket) ois.readObject();
     }
-
 }
