@@ -49,11 +49,12 @@ public class Basket implements Serializable {
     }
 
     public void saveBin(File file) throws IOException {
-        try {
-            var fos = new FileOutputStream(file);
-            var oos = new ObjectOutputStream(fos);
+        try (var fos = new FileOutputStream(file);
+             var oos = new ObjectOutputStream(fos)) {
+
+
             oos.writeObject(this);
-            oos.close();
+
 
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -65,5 +66,6 @@ public class Basket implements Serializable {
         var fis = new FileInputStream(file);
         var ois = new ObjectInputStream(fis);
         return (Basket) ois.readObject();
+
     }
 }
